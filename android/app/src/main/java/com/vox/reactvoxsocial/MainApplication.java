@@ -1,4 +1,4 @@
-package com.invertase.rnfirebasestarter;
+package com.vox.reactvoxsocial;
 
 import androidx.multidex.MultiDexApplication;
 
