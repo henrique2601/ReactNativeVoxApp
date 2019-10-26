@@ -7,6 +7,7 @@ import {
   TextInput,
   Text,
   ImageBackground,
+  Alert,
 } from 'react-native';
 
 import firebase from 'react-native-firebase';
@@ -20,7 +21,7 @@ export default class App extends React.Component {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => Alert.alert(error.message))
   }
 
   async componentDidMount() {

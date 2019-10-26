@@ -7,6 +7,7 @@ import {
   TextInput,
   Text,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import firebase from 'react-native-firebase'
 
@@ -19,7 +20,7 @@ export default class SignUp extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(user => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => Alert.alert(error.message))
   }
 
   render() {

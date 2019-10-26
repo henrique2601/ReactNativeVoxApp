@@ -1,38 +1,20 @@
-import React from 'react'
-import { StyleSheet, Platform, Image, Button, Text, View } from 'react-native'
-import firebase from 'react-native-firebase'
+import React from 'react';
+import { Text, View } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
-export default class Main extends React.Component {
-  state = { currentUser: null }
+// import the different screens
+import MissingPeopleList from './MissingPeopleList'
+import Settings from './Settings'
 
-  componentDidMount() {
-    const { currentUser } = firebase.auth()
+const HomeStack = createStackNavigator({
+  Desaparecidos: MissingPeopleList
+});
 
-    this.setState({ currentUser })
-  }
+const TabNavigator = createBottomTabNavigator({
+  Desaparecidos: HomeStack,
+  Settings: Settings,
+});
 
-  render() {
-    const { currentUser } = this.state
-
-    return (
-      <View style={styles.container}>
-        <Text>
-          Hi {currentUser && currentUser.email}!
-        </Text>
-
-        <Button
-        title="Sign out"
-        onPress={() => firebase.auth().signOut()}
-        />
-      </View>
-    )
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
+export default createAppContainer(TabNavigator);

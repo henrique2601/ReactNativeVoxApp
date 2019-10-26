@@ -22,4 +22,4 @@ const App = createAppContainer(createSwitchNavigator(
   }
 ));
 
-export default App
+export default App;
