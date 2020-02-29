@@ -8,6 +8,6 @@ Esse documento tem como objetivo apresentar e descrever o projeto final denomina
 
 ## [Diagrama de Casos de Uso](diagrama-casos-de-uso.md)
 
-## [Business Model Canvas](bmc-do-produto.md)
+## [Business Model Canvas](bmc.md)
 
 ## [Wireflow](wireflow.md)
