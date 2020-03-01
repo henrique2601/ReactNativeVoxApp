@@ -1,12 +1,12 @@
 import React from "react";
-import { FlatList, SafeAreaView, StyleSheet, Text, View, Image, Icon } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, Text, View, Image } from "react-native";
 import firebase from 'react-native-firebase';
 
 let ref = firebase.firestore().collection('people');
 
-class MissingPeopleList extends React.Component {
+class HomelessPeopleList extends React.Component {
   static navigationOptions = {
-    title: 'Desaparecidos'
+    title: 'Pessoas em situação de rua',
   };
 
   state = {
@@ -14,7 +14,7 @@ class MissingPeopleList extends React.Component {
   };
 
   componentDidMount() {
-    ref.where('type', '==', 'Desaparecido').onSnapshot(querySnapshot => {
+    ref.where('type', '==', 'Morador de rua').onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
         const { name, imageURL } = doc.data();
@@ -89,4 +89,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MissingPeopleList;
+export default HomelessPeopleList;

@@ -56,13 +56,6 @@ export default class App extends React.Component {
             <TouchableOpacity
               title="Button"
               color="red"
-              style={styles.button3} >
-              <Text style={styles.buttonText3}> Esqueceu sua senha?</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              title="Button"
-              color="red"
               style={styles.button2}
               onPress={this.handleLogin}
               >

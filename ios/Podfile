@@ -47,6 +47,8 @@ target 'ReactVoxSocial' do
   pod 'Fabric', '~> 1.10.2'
   pod 'Crashlytics', '~> 3.14.0'
 
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'ReactVoxSocialTests' do
     inherit! :search_paths
     # Pods for testing

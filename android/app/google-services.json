@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "51077732752",
+    "firebase_url": "https://voxsocial-a531a.firebaseio.com",
+    "project_id": "voxsocial-a531a",
+    "storage_bucket": "voxsocial-a531a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51077732752:android:3d9b6ca5144a70ba81bb15",
+        "android_client_info": {
+          "package_name": "com.voc.reactvoxsocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51077732752-o9ev562svleamh16ad4ph0ehdfqq1vd7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQEmP8lVoqa731jO3cGDzX6MlU1bih87g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51077732752-o9ev562svleamh16ad4ph0ehdfqq1vd7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "51077732752-aburijsp1hgk5r77p2m905f0t6kq4fg3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vox.reactvoxsocial"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51077732752:android:d6276da063bdb7aa81bb15",
+        "android_client_info": {
+          "package_name": "com.vox.reactvoxsocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51077732752-o9ev562svleamh16ad4ph0ehdfqq1vd7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQEmP8lVoqa731jO3cGDzX6MlU1bih87g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51077732752-o9ev562svleamh16ad4ph0ehdfqq1vd7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "51077732752-aburijsp1hgk5r77p2m905f0t6kq4fg3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vox.reactvoxsocial"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
