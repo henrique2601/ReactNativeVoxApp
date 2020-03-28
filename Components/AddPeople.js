@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TextInput, ScrollView, ActivityIndicator } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import ImagePicker from 'react-native-image-picker';
 import uuid from 'uuid/v4'; // Import UUID to generate UUID
@@ -7,26 +7,54 @@ import firebase from 'react-native-firebase';
 
 let ref = firebase.firestore().collection('people');
 
+const sports = [
+  {
+    label: 'Football',
+    value: 'football',
+  },
+  {
+    label: 'Baseball',
+    value: 'baseball',
+  },
+  {
+    label: 'Hockey',
+    value: 'hockey',
+  },
+];
+
 export default class AddPeople extends React.Component {
+  static navigationOptions = {
+    title: 'Adicionar',
+  };
+
   constructor(props) {
     super(props);
+    this.inputRefs = {
+      firstTextInput: null,
+      favSport0: null,
+      favSport1: null,
+      lastTextInput: null,
+      favSport5: null,
+    };
+
     this.state = {
-      imgSource: {},
+      imgSource: null,
       name: "",
       gender: "",
       type: "",
       etiny: "",
       description: "",
+      contact: "",
       contactNumber: "",
-
+      canAdd: false,
+      isLoading: false
     };
+
+    //this.InputAccessoryView = this.InputAccessoryView.bind(this);
   }
   chooseFile = () => {
     var options = {
-      title: 'Select Image',
-      customButtons: [
-        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-      ],
+      title: 'Selecione uma foto',
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -46,9 +74,48 @@ export default class AddPeople extends React.Component {
           imgSource: source,
           imageUri: response.uri
         });
+
+        this.setState({isLoading: true})
+
+        let formdata = new FormData();
+        
+        formdata.append("file", {uri: response.uri, name: 'image.jpg', type: 'image/jpeg'})
+
+        fetch('https://sheltered-escarpment-44824.herokuapp.com/detect-face',{
+          method: 'post',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formdata
+        }).then(response => response.json())
+        .then((response) => {
+          console.log(response);
+          debugger;
+          if (response.error) {
+            Alert.alert("Erro", "Nenhum rosto encontrado");
+            this.setState({canAdd: false})
+            this.setState({isLoading: false})
+          } else if (response.firebaseid.toString().length > 0) {
+            Alert.alert("Atenção!!!", "Pessoa já cadastrada");
+            this.setState({firebaseid: response.firebaseid.toString()})
+            this.setState({canAdd: false})
+            this.setState({isLoading: false})
+          } else {
+            this.setState({canAdd: true})
+            this.setState({isLoading: false})
+          }
+        }).catch(err => {
+          console.log(err)
+        });  
       }
     });
   };
+
+  goToDetail = () => {
+    this.props.navigation.navigate('Detail', {
+      firebaseId: this.state.firebaseid
+    });
+  }
 
   uploadImage = () => {
     const ext = this.state.imageUri.split('.').pop(); // Extract image extension
@@ -77,10 +144,11 @@ export default class AddPeople extends React.Component {
                 contact: this.state.contact,
                 contactNumber: this.state.contactNumber,
                 type: this.state.type,
+                owner: firebase.auth().currentUser.uid
             }).then(() => {
-                alert('success');
-                state.imgSource = {};
-                state.imageUri = {};
+                alert('sucesso');
+                state.imgSource = null;
+                state.imageUri = null;
                 state.name = "";
                 state.gender = "";
                 state.etiny = "";
@@ -95,7 +163,7 @@ export default class AddPeople extends React.Component {
         },
         error => {
           unsubscribe();
-          alert('Sorry, Try again.');
+          alert('Erro inesperado, tente novamente.');
         }
       );
   };
@@ -103,85 +171,113 @@ export default class AddPeople extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <Image
-            source={this.state.imgSource}
-            style={{ width: 250, height: 250 }}
+        <ScrollView style={styles.scrollContainer}>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', height: 250}}>
+            
+            {this.state.imgSource ? (
+              <Image
+                source={this.state.imgSource}
+                resizeMode="contain"
+                style={{ width: 250, height: 250 }}
+              />
+            ) : (
+              <Image
+                source={require('../assets/profile_placeholder.png')}
+                resizeMode="contain"
+                style={{ width: 250, height: 250 }}
+              />
+            )}
+            
+          </View>
+          <Button title="Selecionar foto" onPress={this.chooseFile.bind(this)} />
+
+          {this.state.isLoading &&
+            <ActivityIndicator size="small" />
+          }
+
+          {this.state.firebaseid &&
+            <Button title="Ver pessoa cadastrada" onPress={this.goToDetail.bind(this)} />
+          }
+
+          {this.state.canAdd && 
+          <View>
+            <TextInput
+              style={styles.textInputStyle}
+              placeholder="Nome"
+              value={this.state.name}
+              onChangeText={(name) => this.setState({ name })}
           />
-          <Button title="Escolher foto" onPress={this.chooseFile.bind(this)} />
 
-          <TextInput
-            style={styles.textInputStyle}
-            placeholder="Nome"
-            value={this.state.name}
-            onChangeText={(name) => this.setState({ name })}
-         />
-
-         <RNPickerSelect
+          <RNPickerSelect
             placeholder={{
-                label: 'Selecione o tipo',
-                value: null,
-            }}
-            onValueChange={(value) => this.setState({ type: value }) }
+                  label: 'Selecione o tipo',
+                  value: null,
+              }}
             items={[
-                { label: 'Morador de rua', value: 'Morador de rua' },
-                { label: 'Desaparecido', value: 'Desaparecido' },
+                  { label: 'Situação de rua', value: 'Morador de rua' },
+                  { label: 'Desaparecido', value: 'Desaparecido' },
             ]}
-        />
+            onValueChange={(value) => this.setState({ type: value }) }
+            style={pickerSelectStyles}
+          />
 
-        <RNPickerSelect
+          <RNPickerSelect
             placeholder={{
-                label: 'Selecione o genero',
-                value: null,
-            }}
-            onValueChange={(value) => this.setState({ gender: value }) }
+                  label: 'Selecione o genero',
+                  value: null,
+              }}
             items={[
                 { label: 'Masculino', value: 'Masculino' },
                 { label: 'Feminino', value: 'Feminino' },
                 { label: 'Outro', value: 'Outro' },
             ]}
-        />
+            onValueChange={(value) => this.setState({ gender: value }) }
+            style={pickerSelectStyles}
+          />
 
-        <RNPickerSelect
-            style={styles.textInputStyle}
-            placeholder={{
-                label: 'Selecione a etinia',
-                value: null,
-            }}
-            onValueChange={(value) => this.setState({ etiny: value }) }
-            items={[
-                { label: 'Branco', value: 'Branco' },
-                { label: 'Amarelo', value: 'Amarelo' },
-                { label: 'Pardo', value: 'Pardo' },
-                { label: 'Negro', value: 'Negro' },
-            ]}
-        />
+          <RNPickerSelect
+              placeholder={{
+                  label: 'Selecione a etinia',
+                  value: null,
+              }}
+              style={pickerSelectStyles}
+              onValueChange={(value) => this.setState({ etiny: value }) }
+              items={[
+                  { label: 'Branco', value: 'Branco' },
+                  { label: 'Amarelo', value: 'Amarelo' },
+                  { label: 'Pardo', value: 'Pardo' },
+                  { label: 'Negro', value: 'Negro' },
+              ]}
+          />
 
-        <TextInput
-            style={styles.textInputStyle}
-            multiline={true}
-            placeholder="Circunstancia"
-            value={this.state.description}
-            onChangeText={(description) => this.setState({ description })}
-         />
+          <TextInput
+              style={styles.textInputStyle}
+              multiline={true}
+              placeholder="Circunstancia"
+              value={this.state.description}
+              onChangeText={(description) => this.setState({ description })}
+          />
 
-         <TextInput
-            style={styles.textInputStyle}
-            multiline={true}
-            placeholder="Familiar"
-            value={this.state.contact}
-            onChangeText={(contact) => this.setState({ contact })}
-         />
+          <TextInput
+              style={styles.textInputStyle}
+              multiline={true}
+              placeholder="Familiar"
+              value={this.state.contact}
+              onChangeText={(contact) => this.setState({ contact })}
+          />
 
-         <TextInput
-            style={styles.textInputStyle}
-            multiline={true}
-            placeholder="Familiar número (opcional)"
-            value={this.state.contactNumber}
-            onChangeText={(contact) => this.setState({ contactNumber })}
-         />
+          <TextInput
+              style={styles.textInputStyle}
+              multiline={true}
+              placeholder="Familiar número (opcional)"
+              value={this.state.contactNumber}
+              onChangeText={(contactNumber) => this.setState({ contactNumber })}
+          />
 
-          <Button title="Upload" onPress={this.uploadImage.bind(this)} />
+            <Button title="Upload" onPress={this.uploadImage.bind(this)} />
+            </View>
+          }
+          
         </ScrollView>
       </View>
     );
@@ -189,9 +285,11 @@ export default class AddPeople extends React.Component {
 }
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'column',
-    height: '100%'
+    flex: 1,
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 15,
   },
   textTitle: {
     color: '#FFF',
@@ -203,13 +301,38 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textInputStyle: {
-    height: 40,
-    borderColor: 'gray',
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    backgroundColor: '#FFD',
-    marginRight: 20,
-    marginLeft: 20,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30,
     marginBottom: 20,
-    borderRadius: 5
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    marginBottom: 20,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });

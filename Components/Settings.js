@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Platform, Image, Button, Text, View } from 'react-native'
+import { StyleSheet, Platform, Image, Button, Text, View, TouchableOpacity } from 'react-native'
 import firebase from 'react-native-firebase'
 
 export default class Settings extends React.Component {
@@ -15,14 +15,21 @@ export default class Settings extends React.Component {
     this.setState({ currentUser })
   }
 
+  _onPress(navigation) {
+    navigation.navigate('MyEntries');
+  }
+
   render() {
     const { currentUser } = this.state
+    const navigation = this.props.navigation;
 
     return (
       <View style={styles.container}>
         <Text>
           Olá {currentUser && currentUser.email}!
         </Text>
+
+        <Button title="Meus cadastros" onPress={() => this._onPress(navigation)} />
 
         <Button
         title="Deslogar"
